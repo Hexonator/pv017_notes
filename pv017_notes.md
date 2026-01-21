@@ -2,6 +2,7 @@
 
 
 - [ ] Prezentace 1
+    - [ ] nejsem si jistý jak správně zadefinovat riziko a uplatnění hrozby
 - [ ] Prezentace 2
 - [ ] Prezentace 3
 - [ ] Prezentace 4
@@ -15,6 +16,8 @@
 - [ ] Prezentace 12
 
 ---
+
+
 
 ## Prezentace 1
 
@@ -35,6 +38,26 @@
         - Neautorizovaná modifikace a využití zdrojů, man in the middle útoky, impact
     - **Vnitřní hrozby** (insider threat) - útočník je součástí zranitelné organizace
     - **Vnější hrozby** - útočník útočí odkudkoliv ze světa
-- 
+- **STRIDE Framework** pro modelování hrozeb a přiklady:
+    - **Spoofing**: poslání emailu pod jinou identitou, odposlechnutí WiFI jména a hesla, vykonání finanční transakce pod jinou identitou, falešná webová stránka zjišťující jména a hesla, ...
+    - **Tampering**: přístup do DB skrze rozhraní pro správu (default admin credentials), změna svých zdravotních údajů v medicínské aplikaci VZP, změna stavu onboardingu
+    - **Repudiation**: nelze zjistit, kdo poslal příkaz k mazání záloh
+    - **Information Disclosure**: získání admin přístupu, únik dat z chybně zpřístupněného cloudového prostoru
+    - **Denial of Services**:  rušení rádiových frekvencí vybrané IoT sítě
+    - **Elevation of Privilege**: neoprávněné čtení dat z paměti, kde mohou být uložené hesla
+
+### **Útok a bezpečnostní incident** (Attack, Sec. incident) - provádí útočník využitím zranitelnosti aktiva
+- Způsobuje škodu na aktivech
+- Generická kategorizace:
+    - **Přírodní katastrofy** - hurikán, zemětřesení, požár, mohou zničit nezálohovaná data (zálohovat ve vzdálené lokalitě!)
+    - **Externí útoky** - krádeže dat o kartách/lidech, hackery, profesionály 
+    - **Interní útoky** - např. web Wikileaks vznikl z interně zcizených dat
+    - **Selhání, neúmyslné lidské chyby** - výpadek napětí, spojů, disků, vylití kávy do klávesnice, omylem zrušená data, ...
+
+### **Riziko** (Risk) - 
+- Velikost rizika je daná pravděpodobností provedení útoku a výší škody vzniklé útokem
+- Uplatnění hrozby - 
+- možná něco dalšího?
+
 
 ---
