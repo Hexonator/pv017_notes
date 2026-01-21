@@ -14,20 +14,27 @@
 - [ ] Prezentace 11
 - [ ] Prezentace 12
 
-
+---
 
 ## Prezentace 1
 
-- **Aktivum** (Asset) - předmět, myšlenka, informace, atd. mající pro organizaci hodnotu
-    - **Hmotná** - sáhnu si na něj (budovy, peníze, lidé, hardware, ...)
-    - **Nehmotná** - "virtuální" (software, data, patenty, autorská práva, ...)
-- **Zranitelnost** (Vulnerability) - slabina využitelná ke způsobení škod/ztrát
-    - **CVE database** (**C**ommon **V**ulnerabilities and **E**xposures) - soupis známých zranitelností, provozováno MITRE
-- **Hrozba** (Threat) - Potenciální možnost využití zranitelného místa k útoku útočníkem
+### **Aktivum** (Asset) - předmět, myšlenka, informace, atd. mající pro organizaci hodnotu
+- **Hmotná** - sáhnu si na něj (budovy, peníze, lidé, hardware, ...)
+- **Nehmotná** - "virtuální" (software, data, patenty, autorská práva, ...)
+
+### **Zranitelnost** (Vulnerability) - slabina využitelná ke způsobení škod/ztrát
+- **CVE database** (**C**ommon **V**ulnerabilities and **E**xposures) - soupis známých zranitelností, provozováno MITRE
+
+### **Hrozba** (Threat) - Potenciální možnost využití zranitelného místa k útoku útočníkem
+- **Typy hrozeb**:
     - **Odhalení** (Disclosure) citlivých důvěrných dat, postupů, ... (např. analýza komunikačního provozu)
     - **Podvod**, klamání (Deception)
         - Falšování identity, **maškaráda** (Masquerade) - útočník vystupuje jako legitimní uživatel
         - Rozšiřování malware (Planting) - trojský kůň, vir, ...
     - **Narušení**, ničení (Disruption)
         - Neautorizovaná modifikace a využití zdrojů, man in the middle útoky, impact
+    - **Vnitřní hrozby** (insider threat) - útočník je součástí zranitelné organizace
+    - **Vnější hrozby** - útočník útočí odkudkoliv ze světa
+- 
 
+---
