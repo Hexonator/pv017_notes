@@ -1,9 +1,11 @@
 # Struktura
 
-V souboru zpracování otázek jsou nejasná nebo neudělaná místa označena "TODO:"
+V souboru zpracování otázek jsou nejasná nebo neudělaná místa označena ``- [ ] {note}`` a hotová ``- [x] {note}``
+- [ ] {note}
+- [x] {note}
 
-VSCode má built in markdown preview
-Používám markdownlint na linting s tímto presetem v settings.json (přijde mi to čitelnější bez preview)
+VSCode má built in markdown preview a pro editing používám [Markdown All in One](https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one), který má normální klávesové zkratky a QoL improvements.
+Používám markdownlint na linting s tímto presetem v settings.json
 
 ```json
     "markdownlint.config": {
@@ -16,5 +18,6 @@ Používám markdownlint na linting s tímto presetem v settings.json (přijde m
         "no-multiple-blanks": { "maximum": 3 },
     },
 ```
+
 
 Na konci mám v plánu celý soubor vyexportovat do pdf
