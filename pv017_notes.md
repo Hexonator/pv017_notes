@@ -54,7 +54,7 @@
     - **Interní útoky** - např. web Wikileaks vznikl z interně zcizených dat
     - **Selhání, neúmyslné lidské chyby** - výpadek napětí, spojů, disků, vylití kávy do klávesnice, omylem zrušená data, ...
 
-### **Riziko** (Risk) - 
+### **Riziko** (Risk) - pravděpodobnost, že se v daném zranitelném místě uplatní hrozba
 - Velikost rizika je daná pravděpodobností provedení útoku a výší škody vzniklé útokem
 - Uplatnění hrozby - 
 - možná něco dalšího?
