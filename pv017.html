@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PV017 Bezpečnost IT - Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const CheckCircle = ({ className, size }) => (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        );
+
+        const XCircle = ({ className, size }) => (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        );
+
+        const RotateCcw = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+        );
+
+        const RefreshCw = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="23 4 23 10 17 10"></polyline>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+        );
+
+        const Trophy = ({ size }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+            </svg>
+        );
+
+        const SecurityTest = () => {
+            const [answers, setAnswers] = useState({});
+            const [submitted, setSubmitted] = useState(false);
+            const [score, setScore] = useState(0);
+            const [selectedQuestions, setSelectedQuestions] = useState([]);
+            const [usedQuestionIds, setUsedQuestionIds] = useState([]);
+            const [totalCorrect, setTotalCorrect] = useState(0);
+            const [totalAttempted, setTotalAttempted] = useState(0);
+
+            const allQuestions = [
+ 
+                {
+                    id: 3,
+                    type: 'single',
+                    question: 'Co je TSF v kontextu Common Criteria (CC)?',
+                    options: [
+                        'Target Security Framework',
+                        'TOE Security Functions - HW, SW, FW využívaný hodnoceným systémem',
+                        'Technical Safety Features',
+                        'Total System Functionality'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 4,
+                    type: 'multiple',
+                    question: 'Které z následujících jsou správné charakteristiky EAL 4? (více správných)',
+                    options: [
+                        'Funkcionalita otestována',
+                        'Analýza podpořena low-level návrhem TOE modulů',
+                        'Testování podpořeno nezávislým hledáním zranitelností',
+                        'Formálně verifikovaný návrh',
+                        'Vhodné pro střední až vysokou úroveň zabezpečení'
+                    ],
+                    correct: [1, 2, 4]
+                },
+
+                {
+                    id: 7,
+                    type: 'multiple',
+                    question: 'Které mechanismy zajišťují integritu? (více správných)',
+                    options: [
+                        'Symetrické šifrování',
+                        'Hashování',
+                        'MAC (Message Authentication Code)',
+                        'Digitální podpis',
+                        'Biometrická autentizace'
+                    ],
+                    correct: [1, 2, 3]
+                },
+                {
+                    id: 8,
+                    type: 'single',
+                    question: 'Podle IBM klasifikace útočníků, kdo je třída 2?',
+                    options: [
+                        'Script kiddies',
+                        'Chytří nezasvěcení útočníci',
+                        'Zasvěcení insideři se značným specializovaným vzděláním',
+                        'Dobře finančně podporované organizace'
+                    ],
+                    correct: [2]
+                },
+              
+                {
+                    id: 10,
+                    type: 'multiple',
+                    question: 'Které z následujících jsou typy hrozeb podle dokumentu? (více správných)',
+                    options: [
+                        'Odhalení (disclosure)',
+                        'Podvod (deception)',
+                        'Uchvácení (usurpation)',
+                        'Kompromitace',
+                        'Narušení (disruption)'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                
+                {
+                    id: 13,
+                    type: 'multiple',
+                    question: 'Co musí ISMS podle ISO 27001 obsahovat? (více správných)',
+                    options: [
+                        'Oblast působnosti ISMS',
+                        'Politiku informační bezpečnosti',
+                        'Prohlášení o aplikovatelnosti bezpečnostních opatření',
+                        'Seznam všech zaměstnanců',
+                        'Plán zvládání rizik'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 14,
+                    type: 'single',
+                    question: 'Podle zákona o kybernetické bezpečnosti, jaká je stupnice pro aktiva s VYSOKOU dostupností?',
+                    options: [
+                        'Výpadek je tolerován do 1 týdne, stačí pravidelné zálohování',
+                        'Výpadek by neměl překročit 1 pracovní den, běžné metody zálohování',
+                        'Výpadek by neměl překročit několik málo hodin, využívají se záložní systémy',
+                        'Narušení není přípustné, automatizovaná obnova'
+                    ],
+                    correct: [2]
+                },
+                {
+                    id: 15,
+                    type: 'single',
+                    question: 'Co je Security Target (ST) v Common Criteria?',
+                    options: [
+                        'Cílová kombinace komponent spojených s konkrétním produktem nebo systémem',
+                        'Seznam všech možných bezpečnostních hrozeb',
+                        'Profil útočníka pro testování',
+                        'Certifikát vydaný po úspěšném hodnocení'
+                    ],
+                    correct: [0]
+                },
+                {
+                    id: 16,
+                    type: 'multiple',
+                    question: 'Které role patří mezi typické bezpečnostní role v organizaci? (více správných)',
+                    options: [
+                        'CSO (Chief Security Officer)',
+                        'CEO (Chief Executive Officer)',
+                        'CISO (Chief Information Security Officer)',
+                        'Security architekt',
+                        'CTO (Chief Technology Officer)'
+                    ],
+                    correct: [0, 2, 3]
+                },
+                
+                {
+                    id: 19,
+                    type: 'multiple',
+                    question: 'Co zahrnuje 4vrstvá architektura dokumentace ISMS? (více správných)',
+                    options: [
+                        '1. vrstva - Politiky',
+                        '2. vrstva - Procedury',
+                        '3. vrstva - Pracovní instrukce',
+                        '3. vrstva - Bezpečnostní protokoly',
+                        '4. vrstva - Zprávy'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 20,
+                    type: 'single',
+                    question: 'Podle dokumentu, co je riziko?',
+                    options: [
+                        'Pouze pravděpodobnost útoku',
+                        'Pouze velikost škody',
+                        'Funkce pravděpodobnosti útoku × funkce dopadu útoku',
+                        'Počet zranitelností v systému'
+                    ],
+                    correct: [2]
+                },
+                {
+                    id: 21,
+                    type: 'single',
+                    question: 'Co je MAC v kontextu integrity?',
+                    options: [
+                        'Media Access Control',
+                        'Message Authentication Code - ochrana proti aktivnímu útoku',
+                        'Maximum Allowed Connections',
+                        'Mandatory Access Control'
+                    ],
+                    correct: [1]
+                },
+                
+                {
+                    id: 23,
+                    type: 'single',
+                    question: 'Jaká je hlavní funkce Řídicího výboru v managementu informační bezpečnosti?',
+                    options: [
+                        'Provádění penetračních testů',
+                        'Stanovení cílů informační bezpečnosti, odsouhlasení procesů pro implementaci politiky',
+                        'Denní správa systémů',
+                        'Instalace antivirů'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 24,
+                    type: 'single',
+                    question: 'Co znamená EAL 7 v Common Criteria?',
+                    options: [
+                        'Funkcionalita otestována',
+                        'Metodicky navrženo a testováno',
+                        'Formálně verifikovaný návrh a testování - vhodné pro velmi vysoce rizikové situace',
+                        'Struktura otestována'
+                    ],
+                    correct: [2]
+                },
+                {
+                    id: 25,
+                    type: 'multiple',
+                    question: 'Jaké jsou způsoby autentizace? (více správných)',
+                    options: [
+                        'Něco co znám (heslo)',
+                        'Něco co mám (token)',
+                        'Něco co jsem (biometrie)',
+                        'Něco co dělám',
+                        'Někde kde jsem'
+                    ],
+                    correct: [0, 1, 2]
+                },
+                {
+                    id: 26,
+                    type: 'single',
+                    question: 'Co je Protection Profile (PP) v Common Criteria?',
+                    options: [
+                        'Certifikát bezpečnosti produktu',
+                        'Implementačně nezávislá skupina bezpečnostních požadavků určité skupiny TOE',
+                        'Seznam všech zranitelností',
+                        'Profil konkrétního útočníka'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 27,
+                    type: 'single',
+                    question: 'Jaký je rozdíl mezi InfoSec a ISMS politikou?',
+                    options: [
+                        'InfoSec = co proti čemu chránit, ISMS = jak navrhovat a provozovat procesy',
+                        'ISMS je starší verze InfoSec',
+                        'InfoSec je pouze pro veřejný sektor',
+                        'Žádný rozdíl'
+                    ],
+                    correct: [0]
+                },
+                {
+                    id: 28,
+                    type: 'multiple',
+                    question: 'Co patří mezi principy elektronického obchodu usnadňující útok? (více správných)',
+                    options: [
+                        'Automatizace procesů',
+                        'Izolovanost jurisdikce v místech zdroje a cíle útoku',
+                        'Použití silného šifrování',
+                        'Vzdálený přístup útočníka k systému',
+                        'Biometrická autentizace'
+                    ],
+                    correct: [0, 1, 3]
+                },
+                {
+                    id: 29,
+                    type: 'single',
+                    question: 'Podle zákona o kybernetické bezpečnosti, co musí dělat provozovatel KII?',
+                    options: [
+                        'Pouze hlásit kontaktní údaje',
+                        'Hlásit kontakty, detekovat a hlásit incidenty, zavést opatření podle vyhlášky č. 82/2018 Sb.',
+                        'Pouze provádět zálohování',
+                        'Žádné speciální povinnosti'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 30,
+                    type: 'single',
+                    question: 'Co je sémantický útok?',
+                    options: [
+                        'Útok na databázi',
+                        'Útok na lidi, kteří mají tendenci věřit tomu, co čtou',
+                        'Útok na síťový protokol',
+                        'Útok na operační systém'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 31,
+                    type: 'multiple',
+                    question: 'Které z následujících jsou fáze projektu implementace ISMS podle ISO 27003? (více správných)',
+                    options: [
+                        'Zahájení projektu',
+                        'Definování oblasti působnosti ISMS',
+                        'Příprava implementace ISMS',
+                        'Marketing a propagace',
+                        'Návrh a implementace ISMS'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 32,
+                    type: 'single',
+                    question: 'Co je TSC v Common Criteria?',
+                    options: [
+                        'Total Security Control',
+                        'TSF Scope of Control - interakce pod TOE bezpečnostní politikou',
+                        'Technical Security Certification',
+                        'Target System Configuration'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 33,
+                    type: 'single',
+                    question: 'Jaký je doporučený horizont pro krátkodobou bezpečnostní politiku IS?',
+                    options: [
+                        '6 měsíců',
+                        '1-2 roky',
+                        '3-5 let',
+                        '10 let'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 34,
+                    type: 'multiple',
+                    question: 'Co musí znát šéf projektu ISMS? (více správných)',
+                    options: [
+                        'Význam informační bezpečnosti',
+                        'Znalost standardu ISO 27001',
+                        'Programování v Pythonu',
+                        'Jak bude ISMS projekt strukturovaný',
+                        'Manažerské dovednosti'
+                    ],
+                    correct: [0, 1, 3, 4]
+                },
+                {
+                    id: 35,
+                    type: 'single',
+                    question: 'Co je "třída 1,5" útočníků podle IBM klasifikace?',
+                    options: [
+                        'Script kiddies',
+                        'Dobře vybavení lidé z venku s dobrým laboratorním vybavením a základními znalostmi',
+                        'Zasvěcení insideři',
+                        'Finančně podporované organizace'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 36,
+                    type: 'multiple',
+                    question: 'Které z následujících patří do 4vrstvé architektury dokumentace ISMS? (více správných)',
+                    options: [
+                        '1. vrstva - Politiky (schvaluje vrchol)',
+                        '2. vrstva - Procedury (schvaluje výkonný management)',
+                        '3. vrstva - Pracovní instrukce (schvaluje CISO)',
+                        '2. vrstva - Technické standardy',
+                        '4. vrstva - Zprávy (šablony, záznamy, formuláře)'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 37,
+                    type: 'single',
+                    question: 'Co je TSC v Common Criteria?',
+                    options: [
+                        'Total Security Control',
+                        'TSF Scope of Control - interakce pod TOE bezpečnostní politikou',
+                        'Technical Security Certification',
+                        'Target System Configuration'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 38,
+                    type: 'multiple',
+                    question: 'Jaké jsou možné způsoby zvládání rizik? (více správných)',
+                    options: [
+                        'Modifikace rizika pomocí opatření',
+                        'Akceptování rizika',
+                        'Přenesení rizika nebo pojištění',
+                        'Ignorování rizika',
+                        'Eliminace rizika'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 39,
+                    type: 'single',
+                    question: 'Jaký je hlavní rozdíl mezi SFR a SAR v Common Criteria?',
+                    options: [
+                        'SFR jsou pro hardware, SAR pro software',
+                        'SFR specifikuje bezpečnostní funkce, SAR popisuje měření a zajištění souladu během vývoje',
+                        'SFR je pro produkt, SAR pro systém',
+                        'Žádný rozdíl, jsou to synonyma'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 40,
+                    type: 'multiple',
+                    question: 'Co musí obsahovat Plán zvládání rizik podle dokumentu? (více správných)',
+                    options: [
+                        'Seřazení rizik podle priorit',
+                        'Soupis opatření a jejich analýzu',
+                        'Seznam všech zaměstnanců',
+                        'Přidělení odpovědnosti za implementaci',
+                        'Harmonogram implementace'
+                    ],
+                    correct: [0, 1, 3, 4]
+                },
+                {
+                    id: 41,
+                    type: 'single',
+                    question: 'Co je hoax v kontextu bezpečnostních hrozeb?',
+                    options: [
+                        'Pokročilý malware pro krádež dat',
+                        'Nevyžádaný e-mail varující před virem nebo žádající o pomoc, obsahující výzvu k dalšímu rozeslání',
+                        'Technika pro obcházení firewallu',
+                        'Metoda šifrování komunikace'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 42,
+                    type: 'multiple',
+                    question: 'Které role patří do týmů pro reakci na bezpečnostní incidenty? (více správných)',
+                    options: [
+                        'Tým první reakce (běžní provozní pracovníci)',
+                        'ISIRT (zkušení pracovníci, slouží 24/7)',
+                        'Tým obnovy (specialisté se speciálním vybavením)',
+                        'Marketing team',
+                        'Board of directors'
+                    ],
+                    correct: [0, 1, 2]
+                },
+                {
+                    id: 43,
+                    type: 'single',
+                    question: 'Jaký je nejvyšší stupeň EAL, kterého lze dosáhnout zpětně pro již existující produkt?',
+                    options: [
+                        'EAL2',
+                        'EAL3',
+                        'EAL4',
+                        'EAL5'
+                    ],
+                    correct: [2]
+                },
+                {
+                    id: 44,
+                    type: 'multiple',
+                    question: 'Co musí garantovat role DEFR a DES při práci s digitálními důkazy? (více správných)',
+                    options: [
+                        'Dokumentovat všechny své akce',
+                        'Zajistit reprodukovatelnost procesů',
+                        'Použít metodu pro stanovení přesnosti kopie oproti originálu',
+                        'Provést penetrační test',
+                        'Zajistit auditovatelnost procesů'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 45,
+                    type: 'single',
+                    question: 'Co je sémantický útok podle dokumentu?',
+                    options: [
+                        'Útok na databázové struktury',
+                        'Útok na lidi, kteří mají tendenci věřit tomu, co čtou - šíření věrohodných bludů',
+                        'Útok využívající SQL injection',
+                        'Útok na síťové protokoly'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 46,
+                    type: 'multiple',
+                    question: 'Jaké jsou typické kategorie útoků dle oblasti původce? (více správných)',
+                    options: [
+                        'Přírodní vlivy',
+                        'Externí útoky',
+                        'Interní útoky',
+                        'Kybernetické útoky',
+                        'Neúmyslné lidské chyby'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 47,
+                    type: 'single',
+                    question: 'Jaká je doporučená cena bezpečnostního opatření ve vztahu k ceně aktiva?',
+                    options: [
+                        '0,1-1 % ceny aktiva',
+                        '1-20 % ceny aktiva',
+                        '20-50 % ceny aktiva',
+                        '50-100 % ceny aktiva'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 48,
+                    type: 'multiple',
+                    question: 'Co musí Disaster Recovery Plan obsahovat? (více správných)',
+                    options: [
+                        'Kritéria definující, co je bezpečnostní incident',
+                        'Odpovědnosti za aktivaci obnovy jako celku',
+                        'Seznam všech hesel',
+                        'Návody k provádění činností podle plánu obnovy',
+                        'Odpovědnosti za aktivaci dílčích činností'
+                    ],
+                    correct: [0, 1, 3, 4]
+                },
+                {
+                    id: 49,
+                    type: 'single',
+                    question: 'Jaký je hlavní problém s důvěryhodností digitálního podpisu oproti klasickému podpisu?',
+                    options: [
+                        'Digitální podpis je snadno padělatelný',
+                        'Digitální podpis zaručuje jen použití soukromého klíče, ne že osoba dokument četla nebo že trojský kůň nepodvrhl jiný dokument',
+                        'Digitální podpis nelze ověřit',
+                        'Digitální podpis není právně závazný'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 51,
+                    type: 'single',
+                    question: 'Kdy lze systém označit za "trusted", ale nikoliv "trustworthy"?',
+                    options: [
+                        'Pokud splňuje CIA triádu',
+                        'Pokud mu byla přidělena důvěra bez objektivního zdůvodnění',
+                        'Pokud je certifikován podle ISO 27001',
+                        'Pokud prošel penetračními testy'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 52,
+                    type: 'multiple',
+                    question: 'Které vlastnosti se typicky vztahují k pojmu "trustworthy"? (více správných)',
+                    options: [
+                        'Předvídatelné chování systému',
+                        'Schopnost splnit bezpečnostní cíle',
+                        'Pouhá existence certifikátu',
+                        'Odolnost vůči definovaným hrozbám',
+                        'Implicitní důvěra uživatele'
+                    ],
+                    correct: [0, 1, 3]
+                },
+                {
+                    id: 53,
+                    type: 'single',
+                    question: 'Co je primárním cílem hodnocení podle Common Criteria?',
+                    options: [
+                        'Najít všechny zranitelnosti systému',
+                        'Ověřit shodu TOE s deklarovanými bezpečnostními požadavky',
+                        'Zajistit absolutní bezpečnost produktu',
+                        'Porovnat produkty na trhu'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 54,
+                    type: 'multiple',
+                    question: 'Které výroky o Protection Profile (PP) jsou pravdivé? (více správných)',
+                    options: [
+                        'Je implementačně nezávislý',
+                        'Popisuje konkrétní realizaci produktu',
+                        'Může být použit více výrobci',
+                        'Obsahuje SFR a SAR',
+                        'Je vydáván certifikační autoritou'
+                    ],
+                    correct: [0, 2, 3]
+                },
+                {
+                    id: 55,
+                    type: 'single',
+                    question: 'Co nejlépe vystihuje rozdíl mezi SFR a SAR?',
+                    options: [
+                        'SFR definuje funkce, SAR definuje úroveň důvěry v jejich realizaci',
+                        'SAR je podmnožinou SFR',
+                        'SFR se týká provozu, SAR vývoje',
+                        'Neexistuje mezi nimi rozdíl'
+                    ],
+                    correct: [0]
+                },
+                {
+                    id: 56,
+                    type: 'multiple',
+                    question: 'Které faktory vstupují do stanovení rizika podle ISMS? (více správných)',
+                    options: [
+                        'Hodnota aktiva',
+                        'Hrozba',
+                        'Zranitelnost',
+                        'Počet uživatelů systému',
+                        'Dopad incidentu'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 57,
+                    type: 'single',
+                    question: 'Které tvrzení o EAL úrovních je správné?',
+                    options: [
+                        'Vyšší EAL automaticky znamená vyšší bezpečnost produktu',
+                        'EAL hodnotí kvalitu procesu vývoje a hodnocení',
+                        'EAL je metrika provozní bezpečnosti',
+                        'EAL lze libovolně zvyšovat dodatečně'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 58,
+                    type: 'multiple',
+                    question: 'Které činnosti patří do fáze „Check“ v PDCA cyklu ISMS? (více správných)',
+                    options: [
+                        'Interní audit ISMS',
+                        'Vyhodnocení bezpečnostních incidentů',
+                        'Definice bezpečnostní politiky',
+                        'Přezkoumání vedením',
+                        'Implementace technických opatření'
+                    ],
+                    correct: [0, 1, 3]
+                },
+                {
+                    id: 59,
+                    type: 'single',
+                    question: 'Co je hlavním účelem Prohlášení o aplikovatelnosti (SoA)?',
+                    options: [
+                        'Seznam všech rizik',
+                        'Zdůvodnit výběr a nevýběr bezpečnostních opatření',
+                        'Popis architektury IS',
+                        'Plán obnovy po havárii'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 60,
+                    type: 'multiple',
+                    question: 'Které role jsou typicky zapojeny do řízení informační bezpečnosti? (více správných)',
+                    options: [
+                        'Vrcholový management',
+                        'CISO',
+                        'Řídicí výbor',
+                        'Helpdesk',
+                        'ISIRT'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 61,
+                    type: 'single',
+                    question: 'Kdy se hrozba stává rizikem?',
+                    options: [
+                        'Jakmile je identifikována',
+                        'Pokud existuje zranitelnost a relevantní dopad',
+                        'Pokud je pravděpodobná',
+                        'Pokud je popsána v dokumentaci'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 62,
+                    type: 'multiple',
+                    question: 'Které vlastnosti charakterizují sémantické útoky? (více správných)',
+                    options: [
+                        'Zneužívají důvěru uživatelů',
+                        'Neútočí přímo na technické prostředky',
+                        'Jsou formou sociálního inženýrství',
+                        'Vyžadují znalost kryptografie',
+                        'Cílí na význam informace, ne její formu'
+                    ],
+                    correct: [0, 1, 2, 4]
+                },
+                {
+                    id: 63,
+                    type: 'single',
+                    question: 'Jaký je vztah mezi ISMS a technickými bezpečnostními opatřeními?',
+                    options: [
+                        'ISMS je tvořeno pouze technickými opatřeními',
+                        'Technická opatření jsou jednou z částí ISMS',
+                        'ISMS technická opatření neřeší',
+                        'Technická opatření nahrazují ISMS'
+                    ],
+                    correct: [1]
+                },
+                {
+                    id: 64,
+                    type: 'multiple',
+                    question: 'Které dokumenty patří do 1. vrstvy dokumentace ISMS? (více správných)',
+                    options: [
+                        'Bezpečnostní politika',
+                        'Politika řízení rizik',
+                        'Pracovní instrukce',
+                        'Záznamy o incidentech',
+                        'Politika řízení přístupů'
+                    ],
+                    correct: [0, 1, 4]
+                },
+                {
+                    id: 65,
+                    type: 'single',
+                    question: 'Proč nelze digitální podpis považovat za absolutní důkaz vůle podepisujícího?',
+                    options: [
+                        'Protože je kryptograficky slabý',
+                        'Protože neprokazuje, že osoba dokument skutečně četla',
+                        'Protože není právně uznatelný',
+                        'Protože neobsahuje časové razítko'
+                    ],
+                    correct: [1]
+                },
+                {
+                    "id": 66,
+                    "type": "single",
+                    "question": "Co je to TSF (TOE Security Functions)?",
+                    "options": [
+                    "Total System Framework - celkový systémový rámec",
+                    "HW, SW, FW využívaný hodnoceným systémem pro bezpečnostní funkce",
+                    "Target Security Features - cílové bezpečnostní vlastnosti",
+                    "Technical Safety Framework - technický bezpečnostní rámec"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 67,
+                    "type": "multiple",
+                    "question": "Které z následujících patří mezi typy bezpečnostních opatření podle účinnosti? (více správných)",
+                    "options": [
+                    "Slabé - ochrana před náhodným/amatérskim útokem",
+                    "Středně silné - ochrana před útokem finančně nebo časově omezeným",
+                    "Silné - ochrana před výjimečným/profesionálním útokem",
+                    "Velmi silné - ochrana před státními aktéry",
+                    "Absolutní - úplná ochrana"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 68,
+                    "type": "single",
+                    "question": "Co je scrumbled data v kontextu testovacího prostředí?",
+                    "options": [
+                    "Šifrovaná data pro testování",
+                    "Data vzniklá úpravou reálných dat",
+                    "Náhodně generovaná testovací data",
+                    "Zálohovaná produkční data"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 69,
+                    "type": "multiple",
+                    "question": "Které kategorie patří do stupnice závažnosti auditních zjištění? (více správných)",
+                    "options": [
+                    "Není závažné - prostupek proti bezpečnostním zvyklostem",
+                    "Závažnost C - prostupek bez ohrožení",
+                    "Závažnost B - významný nedostatek, měl by být odstraněn při příležitosti",
+                    "Závažnost A - velmi závažný, doporučeno okamžité odstranění",
+                    "Závažnost S - kritický, systém musí být vypnut"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 70,
+                    "type": "multiple",
+                    "question": "Které vlastnosti musí garantovat role DEFR a DES při práci s digitálními důkazy? (více správných)",
+                    "options": [
+                    "Dokumentovat všechny své akce",
+                    "Zajistit reprodukovatelnost procesů",
+                    "Použít metodu pro stanovení přesnosti kopie oproti originálu",
+                    "Provést penetrační test systému",
+                    "Zajistit auditovatelnost procesů"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 71,
+                    "type": "single",
+                    "question": "Co je to ISIRT?",
+                    "options": [
+                    "Information Security Incident Response Team",
+                    "International Security Investigation and Research Team",
+                    "Internal System Integrity Review Team",
+                    "ISO Security Implementation and Risk Team"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 72,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou fáze SDLC (System Development Life Cycle)? (více správných)",
+                    "options": [
+                    "Zahájení - dokumentace účelu a oblasti",
+                    "Vývoj nebo zakoupení",
+                    "Implementace - konfigurace a testování",
+                    "Marketing a propagace",
+                    "Likvidace nebo přesun"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 73,
+                    "type": "multiple",
+                    "question": "Které role patří mezi správné v PKI infrastruktuře? (více správných)",
+                    "options": [
+                    "Vydavatel certifikačních politik",
+                    "Schvalovatel certifikačních politik",
+                    "Certifikační autorita",
+                    "Registrační autorita",
+                    "Kontrolní autorita"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 74,
+                    "type": "multiple",
+                    "question": "Které faktory ovlivňují pravděpodobnost útoku při analýze rizik? (více správných)",
+                    "options": [
+                    "Motivace útočníka",
+                    "Míra zranitelnosti",
+                    "Obtížnost uskutečnění útoku",
+                    "Počet zaměstnanců",
+                    "Cena aktiva"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 75,
+                    "type": "single",
+                    "question": "Co znamená separace zodpovědnosti v bezpečnostní politice?",
+                    "options": [
+                    "Oddělení vývojového a produkčního prostředí",
+                    "Při důležitém úkonu musí být aspoň dva lidé (duálná autorizace)",
+                    "Oddělení fyzické a logické bezpečnosti",
+                    "Rozdělení zodpovědnosti mezi oddělení"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 76,
+                    "type": "multiple",
+                    "question": "Které metody se používají při auditu ISMS? (více správných)",
+                    "options": [
+                    "Vyšetřování - kontrola a analýza objektů",
+                    "Interview - rozhovory se zaměstnanci",
+                    "Testování - cvičná prevádzka",
+                    "Penetrační testy",
+                    "Hlubší vyšetřování specifikací a mechanismů"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 77,
+                    "type": "single",
+                    "question": "Jaký je hlavní rozdíl mezi TCSEC třídou C a B?",
+                    "options": [
+                    "C používá šifrování, B ne",
+                    "C má volitelnou ochranu (DAC), B má povinnou ochranu (MAC)",
+                    "C je pro hardware, B pro software",
+                    "B je starší standard než C"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 78,
+                    "type": "multiple",
+                    "question": "Co musí obsahovat BCP (Business Continuity Plan)? (více správných)",
+                    "options": [
+                    "Contingency Plan - plán činnosti IT po útoku",
+                    "Disaster Recovery Plan - plán obnovy",
+                    "Marketing strategie",
+                    "Scénáře pro různé typy incidentů",
+                    "Analýza incidentů"
+                    ],
+                    "correct": [0, 1, 3, 4]
+                },
+                {
+                    "id": 79,
+                    "type": "single",
+                    "question": "Co je to botnet?",
+                    "options": [
+                    "Síť automatizovaných testovacích robotů",
+                    "Kolekce malware robotů běžících autonomně ve více počítačích centrálně řízená autorem",
+                    "Nástroj pro automatizaci bezpečnostních auditů",
+                    "Typ firewallu pro IoT zařízení"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 80,
+                    "type": "multiple",
+                    "question": "Jaké jsou typy auditního vyšetření podle rozsahu? (více správných)",
+                    "options": [
+                    "Všeobecné - omezené množství důkazů",
+                    "Cílené - podstatné množství důkazů",
+                    "Detailné - velké množství důkazů",
+                    "Povrchní - minimální dokumentace",
+                    "Reprezentativní - na reprezentativní vzorce"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 81,
+                    "type": "single",
+                    "question": "Jaký je hlavní problém standardizace v IT oblasti?",
+                    "options": [
+                    "Příliš rychlé změny technologií",
+                    "Proces schvalování může trvat až 5 let, což je pro IT dlouho",
+                    "Nedostatek odborníků",
+                    "Vysoké náklady na certifikaci"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 82,
+                    "type": "multiple",
+                    "question": "Které vlastnosti musí mít digitální důkazy? (více správných)",
+                    "options": [
+                    "Relevance - vztahuje se k vyšetřování",
+                    "Spolehlivost - validované a auditovatelné procesy",
+                    "Dostatečnost - dostatek materiálu pro vyšetřování",
+                    "Tajnost - nesmí být zpřístupněny",
+                    "Opakovatelnost - stejné výsledky při stejné metodě"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 83,
+                    "type": "single",
+                    "question": "Co je to Gap Analysis v kontextu ISMS?",
+                    "options": [
+                    "Analýza časových mezer mezi audity",
+                    "Analýza nepokrytých míst - Top-down nebo Bottom-up přístup",
+                    "Analýza bezpečnostních mezer v síti",
+                    "Analýza rozdílů mezi dvěma verzemi systému"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 84,
+                    "type": "single",
+                    "question": "Jaký je vztah mezi TR ISO typu 1 a standardem ISO?",
+                    "options": [
+                    "TR typ 1 je plnohodnotný standard",
+                    "TR typ 1 vzniká, když není dostatečná shoda, každé 3 roky se reviduje",
+                    "TR typ 1 je starší verze standardu",
+                    "TR typ 1 je pouze interní dokument"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 85,
+                    "type": "multiple",
+                    "question": "Které kompetence musí mít DEFR/DES? (více správných)",
+                    "options": [
+                    "Informovaný - dokáže rozpoznat a identifikovat problém",
+                    "Znalý - formální vzdělání nebo prax z práce v týmu",
+                    "Zručný - může pracovat samostatně bez dozoru",
+                    "Certifikovaný - má oficiální certifikát",
+                    "Autorizovaný - má povolení od vedení"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 86,
+                    "type": "single",
+                    "question": "Jaký je rozdíl meziautorizací a autentizací?",
+                    "options": [
+                    "Autorizace je proces ověření identity, autentizace je koncept povolení přístupu",
+                    "Autorizace je koncept povolení přístupu, autentizace je proces ověření identity",
+                    "Autorizace je pro uživatele, autentizace je pro systémy",
+                    "Žádný rozdíl, používají se zaměnitelně"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 87,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou typy bezpečnostních mechanismů podle povahy? (více správných)",
+                    "options": [
+                    "Fyzický - trezor, generátor energie",
+                    "Technický - auth token",
+                    "Logický - antivirus",
+                    "Administrativní - zákony, normy",
+                    "Virtuální - cloudová bezpečnost"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 88,
+                    "type": "single",
+                    "question": "Co je bázová téza informační bezpečnosti?",
+                    "options": [
+                    "Všechny systémy jsou 100% bezpečné s dostatečnými opatřeními",
+                    "Všechny informační systémy vykazují zranitelnosti, které mohou umožnit uplatnění hrozby",
+                    "Bezpečnost je možná pouze s certifikací ISO 27001",
+                    "Útočníci vždy najdou cestu do systému"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 89,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou typy prostředí v ISMS? (více správných)",
+                    "options": [
+                    "Vývojové",
+                    "Testovací - používá scrumbled data",
+                    "Akceptační - používá staré reálné data",
+                    "Provozní - používá reálné data",
+                    "Demonstrační - používá fiktivní data"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 90,
+                    "type": "single",
+                    "question": "Co je to Security Enforcing Function?",
+                    "options": [
+                    "Funkce pro detekci bezpečnostních incidentů",
+                    "Nástroj, který odstraňuje nebo snižuje úroveň rizika",
+                    "Organizační jednotka zodpovědná za bezpečnost",
+                    "Certifikační autorita pro bezpečnostní politiky"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 91,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou typy Security Enforcing Function? (více správných)",
+                    "options": [
+                    "Preventivní - úplně eliminuje rizika",
+                    "Heuristické - za běhu zabraňuje rizikům",
+                    "Detekční a opravné - povoluje riziko a řeší ho",
+                    "Prediktivní - předpovídá budoucí rizika",
+                    "Reaktivní - reaguje po útoku"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 92,
+                    "type": "single",
+                    "question": "Jaký je rozdíl mezi de facto a de iure standardem?",
+                    "options": [
+                    "De facto je starší než de iure",
+                    "De facto vzniká konsensem komunity, de iure je schválen standardizační organizací",
+                    "De facto je evropský, de iure je americký",
+                    "De facto je bezplatný, de iure je placený"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 93,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou příklady de facto standardů? (více správných)",
+                    "options": [
+                    "RFC dokumenty (IETF) pro Internet",
+                    "OWASP pro webové aplikace",
+                    "ISF - Information Security Forum",
+                    "ISO/IEC 27001",
+                    "IEEE 802.xx"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 94,
+                    "type": "single",
+                    "question": "Co je Technical Report (TR) ISO typu 2?",
+                    "options": [
+                    "Dokument pro oblasti, které se běžně nestandardizují",
+                    "Dokument pro oblasti, které jsou stále ve vývoji a očekává se budoucí standardizace",
+                    "Dokument, kde není dostatečná shoda ve výboru",
+                    "Dokument pro interní použití ISO"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 95,
+                    "type": "multiple",
+                    "question": "Jaké jsou fáze procesu normalizace ISO? (více správných)",
+                    "options": [
+                    "NWI - New Work Item navržen TC",
+                    "WD - Working Draft připraven WG",
+                    "CD - Committee Draft upraven SC",
+                    "DIS - Draft International Standard schválen TC",
+                    "FDIS - Final Draft International Standard"
+                    ],
+                    "correct": [0, 1, 2, 3, 4]
+                },
+                {
+                    "id": 96,
+                    "type": "single",
+                    "question": "Která z následujících rolí NENÍ typickou bezpečnostní rolí v managementu organizace?",
+                    "options": [
+                    "CSO (Chief Security Officer)",
+                    "CISO (Chief Information Security Officer)",
+                    "CTO (Chief Technology Officer)",
+                    "Security architekt"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 97,
+                    "type": "multiple",
+                    "question": "Co patří mezi úkoly CISO? (více správných)",
+                    "options": [
+                    "Vytváří politiku informační bezpečnosti",
+                    "Dohlíží na plnění politiky",
+                    "Připravuje SoA (Statement of Applicability)",
+                    "Provádí penetrační testy",
+                    "Spravuje servery"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 98,
+                    "type": "single",
+                    "question": "Co je hlavní rozdíl mezi bezpečnostní událostí a bezpečnostním incidentem?",
+                    "options": [
+                    "Událost je vždy incidentem, incident není vždy událostí",
+                    "Incident je jedna nebo více událostí, které mohou ohrozit informační bezpečnost",
+                    "Událost je závažnější než incident",
+                    "Žádný rozdíl, jsou to synonyma"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 99,
+                    "type": "multiple",
+                    "question": "Jaké jsou kategorie bezpečnostních incidentů podle závažnosti? (více správných)",
+                    "options": [
+                    "Small - informace, žádný dopad",
+                    "Less serious - varování, nízký dopad",
+                    "Serious - kritický stav, střední dopad",
+                    "Very serious - núdzový stav, silný dopad",
+                    "Catastrophic - totální selhání"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 100,
+                    "type": "single",
+                    "question": "Co je to DoS (Denial of Service) útok?",
+                    "options": [
+                    "Útok, kdy systém odopírá přístup autorizovaným uživatelům",
+                    "Útok na databázové služby",
+                    "Útok přes DOS operační systém",
+                    "Útok na dokumentační systémy"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 101,
+                    "type": "multiple",
+                    "question": "Které z následujících jsou příklady Malicious Code? (více správných)",
+                    "options": [
+                    "Virus - škodlivý kód, který se sám rozmnožuje",
+                    "Červ - škodlivý kód, který se sám šíří po síti",
+                    "Trojský kůň - program, který umožní autorovi přístup",
+                    "Firewall - blokuje škodlivý provoz",
+                    "Botnet - kolekce malware robotů"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 102,
+                    "type": "single",
+                    "question": "Co je to Inappropriate Usage v kontextu bezpečnostních incidentů?",
+                    "options": [
+                    "Technický útok na systém",
+                    "Uživatel porušuje bezpečnostní politiku organizace",
+                    "Malware infikující systém",
+                    "Fyzické poškození zařízení"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 103,
+                    "type": "multiple",
+                    "question": "Jaké jsou fáze reakcie na bezpečnostní incident? (více správných)",
+                    "options": [
+                    "Plán a příprava",
+                    "Detekce a vypracování správy",
+                    "Reakce na incident",
+                    "Marketingová kampaň",
+                    "Poučení z incidentu"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 104,
+                    "type": "single",
+                    "question": "Který tým reaguje jako první při bezpečnostním incidentu?",
+                    "options": [
+                    "ISIRT - zkušení pracovníci 24/7",
+                    "Tým první reakce - běžní provozní pracovníci",
+                    "Tým obnovy - specialisté",
+                    "Management"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 105,
+                    "type": "multiple",
+                    "question": "Co musí obsahovat první fáze řízení rizik - ustanovení kontextu? (více správných)",
+                    "options": [
+                    "Vymezení účelu vykonání procesu",
+                    "Zajištění zdrojů - ekonomických i lidských",
+                    "Vymezení spravované oblasti",
+                    "Implementace opatření",
+                    "Stanovení kritérií pro vyhodnocení rizik"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 106,
+                    "type": "single",
+                    "question": "Jak se počítá úroveň rizika podle dokumentu?",
+                    "options": [
+                    "Riziko = pravděpodobnost × dopad",
+                    "Riziko = F(pravděpodobnost útoku) × F'(dopad útoku)",
+                    "Riziko = počet zranitelností × hodnota aktiva",
+                    "Riziko = frekvence útoků + závažnost škod"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 107,
+                    "type": "multiple",
+                    "question": "Jaké jsou typy ohodnocení rizik? (více správných)",
+                    "options": [
+                    "Elementární - převzetí opatření z podobných systémů",
+                    "Neformální - na základě zkušeností odborníků",
+                    "Formální - použití standardních metod a nástrojů",
+                    "Kombinované - kombinace výše uvedených",
+                    "Automatické - pomocí AI"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 108,
+                    "type": "single",
+                    "question": "Co je výstupem fáze ohodnocení rizik?",
+                    "options": [
+                    "Implementovaná opatření",
+                    "Správa o ohodnocení rizik a Statement of Applicability (SoA)",
+                    "Certifikát ISO 27001",
+                    "Plán disaster recovery"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 109,
+                    "type": "multiple",
+                    "question": "Jaké jsou kroky zvládnutí rizik? (více správných)",
+                    "options": [
+                    "Sestupné zařazení rizik",
+                    "Sepsání opatření a analýza realizovatelnosti",
+                    "Analýza nákladů",
+                    "Ignorování malých rizik",
+                    "Implementace vybraných opatření"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 110,
+                    "type": "single",
+                    "question": "Co je hlavním cílem fáze 'akceptace rizik' v řízení rizik?",
+                    "options": [
+                    "Úplné odstránění všech rizik",
+                    "Management odsouhlasí plán zvládání rizik a zbývající rizika jako akceptovatelná",
+                    "Pojištění proti všem rizikům",
+                    "Přenesení rizik na třetí strany"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 111,
+                    "type": "multiple",
+                    "question": "Jaké jsou fáze SDLC (System Development Life Cycle)? (více správných)",
+                    "options": [
+                    "Zahájení - dokumentace účelu",
+                    "Vývoj nebo zakoupení",
+                    "Implementace - konfigurace a testování",
+                    "Provoz a údržba",
+                    "Likvidace nebo přesun"
+                    ],
+                    "correct": [0, 1, 2, 3, 4]
+                },
+                {
+                    "id": 112,
+                    "type": "single",
+                    "question": "Na jak dlouho se typicky stanovuje celková bezpečnostní politika organizace?",
+                    "options": [
+                    "1-2 roky",
+                    "3-4 roky",
+                    "5-10 let",
+                    "15-20 let"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 113,
+                    "type": "single",
+                    "question": "Na jak dlouho se typicky stanovuje systémová bezpečnostní politika IS?",
+                    "options": [
+                    "6 měsíců",
+                    "1-2 roky",
+                    "2-5 let",
+                    "5-10 let"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 114,
+                    "type": "multiple",
+                    "question": "Co definuje celková bezpečnostní politika? (více správných)",
+                    "options": [
+                    "CO a KTO se chrání - identifikace aktiv",
+                    "PROTI KOMU/ČEMU - potenciální útočníci",
+                    "JAK se chrání - způsob uplatňování opatření",
+                    "KDE se chrání - struktura organizace",
+                    "KDY se útočí - časový rámec útoků"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 115,
+                    "type": "single",
+                    "question": "Který výrok o bezpečnostní politice je NEPRAVDIVÝ?",
+                    "options": [
+                    "Měla by být nezávislá na konkrétních IT",
+                    "Měla by být formální a těžko čitelná pro vyšší bezpečnost",
+                    "Zaměstnanci musí být školeni na její dodržování",
+                    "Zahrnuje měření a sledování výkonnosti opatření"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 116,
+                    "type": "multiple",
+                    "question": "Co obsahuje systémová bezpečnostní politika? (více správných)",
+                    "options": [
+                    "Konkrétně použité IT",
+                    "Identifikovaná rizika",
+                    "Konkrétní opatření a mechanismy",
+                    "Obecné principy bez konkrétních IT",
+                    "Určení zodpovědných osob"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 117,
+                    "type": "single",
+                    "question": "Co je BCP (Business Continuity Plan)?",
+                    "options": [
+                    "Plán marketingové kontinuity",
+                    "Plán, co dělat po útoku/havárii resp. jak udržet kontinuitu činnosti organizace",
+                    "Plán školení zaměstnanců",
+                    "Plán nákupu nového hardwaru"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 118,
+                    "type": "multiple",
+                    "question": "Jaké jsou varianty BCP? (více správných)",
+                    "options": [
+                    "Contingency Plan - plán činnosti IT po útoku",
+                    "Disaster Recovery Plan - plán obnovy",
+                    "Marketing Recovery Plan",
+                    "Scénáře pro různé incidenty",
+                    "HR Continuity Plan"
+                    ],
+                    "correct": [0, 1, 3]
+                },
+                {
+                    "id": 119,
+                    "type": "single",
+                    "question": "Který standard říká, JAK navrhnout ISMS?",
+                    "options": [
+                    "ISO 27000",
+                    "ISO 27001",
+                    "ISO 27002",
+                    "ISO 27003"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 120,
+                    "type": "single",
+                    "question": "Který standard říká, JAKÁ opatření může ISMS obsahovat?",
+                    "options": [
+                    "ISO 27000",
+                    "ISO 27001",
+                    "ISO 27002",
+                    "ISO 27003"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 121,
+                    "type": "single",
+                    "question": "Co je TR ISO typu 3?",
+                    "options": [
+                        "Dokument pro oblasti ve vývoji",
+                        "Dokument pro oblasti bez dostatečné shody",
+                        "Dokument pro oblasti, které se běžně nestandardizují, ale návrh je natolik významný",
+                        "Interní dokument ISO"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 122,
+                    "type": "multiple",
+                    "question": "Které role jsou součástí správné rady? (více správných)",
+                    "options": [
+                        "Výkonné vedení",
+                        "Dozorná rada",
+                        "ISIRT",
+                        "Helpdesk",
+                        "Projektový tým"
+                    ],
+                    "correct": [0, 1]
+                },
+                {
+                    "id": 123,
+                    "type": "single",
+                    "question": "Co je scrumbled data?",
+                    "options": [
+                        "Šifrovaná produkční data",
+                        "Data vzniklá úpravou reálných dat pro testování",
+                        "Náhodně generovaná data",
+                        "Komprimovaná záložní data"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 124,
+                    "type": "multiple",
+                    "question": "Které metody patří mezi způsoby hodnocení objektu při auditu? (více správných)",
+                    "options": [
+                        "Vyšetřování - kontrola a analýza",
+                        "Interview - rozhovory",
+                        "Testování - cvičná provozní zkouška",
+                        "Penetrační testy",
+                        "Hlubší vyšetřování specifikací"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 125,
+                    "type": "single",
+                    "question": "Co charakterizuje Blind (Black Box) test?",
+                    "options": [
+                        "Zkoumání jen na základě veřejně dostupných znalostí, objekt je připraven",
+                        "Zkoumání s plnou znalostí, objekt není připraven",
+                        "Zkoumání s omezenými znalostmi",
+                        "Auditor má úplnou znalost, objekt neví nic"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 126,
+                    "type": "single",
+                    "question": "Co je Reversal test?",
+                    "options": [
+                        "Test funkčnosti bez znalosti kódu",
+                        "Test s částečnou znalostí systému",
+                        "Auditor má úplnou znalost objektu, objekt neví nic o testování - simulovaný útok",
+                        "Obě strany připraveny a znají detaily"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 127,
+                    "type": "multiple",
+                    "question": "Co musí obsahovat příprava auditora? (více správných)",
+                    "options": [
+                        "Porozumění podkladům (aktiva, politiky)",
+                        "Setkání s vedením organizace",
+                        "Vypracování plánu auditu",
+                        "Implementace technických opatření",
+                        "Určení auditních procedur"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 128,
+                    "type": "single",
+                    "question": "Které tvrzení o TSC (TSF Scope of Control) je správné?",
+                    "options": [
+                        "Je to celkový bezpečnostní rámec",
+                        "Představuje interakce pod TOE bezpečnostní politikou",
+                        "Je to certifikačnístandrad",
+                        "Je to metoda testování"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 129,
+                    "type": "multiple",
+                    "question": "Které kompetence musí mít DEFR/DES? (více správných)",
+                    "options": [
+                        "Informovaný - dokáže rozpoznat problém",
+                        "Znalý - formální vzdělání nebo prax",
+                        "Zručný - může pracovat samostatně",
+                        "Certifikovaný - má oficiální certifikát",
+                        "Manažerský - řídí tým"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 130,
+                    "type": "single",
+                    "question": "Jaký je hlavní rozdíl mezi investigativním a auditním hodnocením?",
+                    "options": [
+                        "Investigativní je rychlejší",
+                        "Auditní hodnocení je procesně orientované a lépe opakovatelné",
+                        "Investigativní jelevnější",
+                        "Auditní vyžaduje účast vývojáře"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 131,
+                    "type": "multiple",
+                    "question": "Co patří mezi vlastnosti digitálních důkazů? (více správných)",
+                    "options": [
+                        "Relevance - vztahuje se k vyšetřování",
+                        "Spolehlivost - validované procesy",
+                        "Dostatečnost - dostatek materiálu",
+                        "Tajnost - nesmí být zpřístupněny",
+                        "Opakovatelnost - stejné výsledky"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 132,
+                    "type": "single",
+                    "question": "Co je Tandem test?",
+                    "options": [
+                        "Obě strany připraveny a znají všechny detaily - in-house review",
+                        "Black box test bez přípravy",
+                        "Simulovaný útok",
+                        "Test s omezenými znalostmi"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 133,
+                    "type": "multiple",
+                    "question": "Které procesy patří k zacházení s digitálními důkazy? (více správných)",
+                    "options": [
+                        "Identifikace - vyhledávání a dokumentace",
+                        "Zhromažďování - přemístění do laboratoře",
+                        "Získávání - vytváření kopií",
+                        "Marketing důkazů",
+                        "Uchovávání - ochrana integrity"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 134,
+                    "type": "single",
+                    "question": "Co je Double Blind test?",
+                    "options": [
+                        "Zkoumání jen na základě veřejných znalostí, objekt NENÍ připraven",
+                        "Obě strany mají plnou znalost",
+                        "Auditor neví nic, objekt je připraven",
+                        "Test s částečnou znalostí obou stran"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 135,
+                    "type": "multiple",
+                    "question": "Které typy prostředí se používají v ISMS? (více správných)",
+                    "options": [
+                        "Vývojové",
+                        "Testovací - scrumbled data",
+                        "Akceptační - staré reálné data",
+                        "Produkční - reálné data",
+                        "Demonstrační - marketingová data"
+                    ],
+                    "correct": [0, 1, 2, 3]
+                },
+                {
+                    "id": 136,
+                    "type": "multiple",
+                    "question": "Jaké jsou typy hrozeb podle STRIDE modelu? (více správných)",
+                    "options": [
+                        "Spoofing - falšování identity",
+                        "Tampering - neoprávněná modifikace",
+                        "Repudiation - popření akce",
+                        "Information Disclosure - odhalení informací",
+                        "Elevation of Privilege - zvýšení oprávnění"
+                    ],
+                    "correct": [0, 1, 2, 3, 4]
+                },
+                {
+                    "id": 137,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Non-Repudiation?",
+                    "options": [
+                        "Spoofing",
+                        "Tampering",
+                        "Repudiation",
+                        "Denial of Service"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 138,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Integrity?",
+                    "options": [
+                        "Spoofing",
+                        "Tampering",
+                        "Information Disclosure",
+                        "Denial of Service"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 139,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Confidentiality?",
+                    "options": [
+                        "Spoofing",
+                        "Tampering",
+                        "Information Disclosure",
+                        "Elevation of Privilege"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 140,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Availability?",
+                    "options": [
+                        "Spoofing",
+                        "Denial of Service",
+                        "Repudiation",
+                        "Information Disclosure"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 141,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Authentication?",
+                    "options": [
+                        "Spoofing",
+                        "Tampering",
+                        "Repudiation",
+                        "Denial of Service"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 142,
+                    "type": "single",
+                    "question": "Která hrozba z STRIDE modelu odpovídá porušení Authorization?",
+                    "options": [
+                        "Spoofing",
+                        "Tampering",
+                        "Elevation of Privilege",
+                        "Information Disclosure"
+                    ],
+                    "correct": [2]
+                },
+                {
+                    "id": 143,
+                    "type": "single",
+                    "question": "Jaký je hlavní rozdíl mezi identifikačním modelem a modelem ochrany prostředí v kyberbezpečnosti?",
+                    "options": [
+                        "Identifikační (USA) - efektivní ale vysoký zásah do soukromí, Model ochrany (EU) - menší zásah do soukromí",
+                        "Identifikační je levnější než model ochrany",
+                        "Model ochrany je používán pouze v USA",
+                        "Žádný rozdíl v přístupu k soukromí"
+                    ],
+                    "correct": [0]
+                },
+                {
+                    "id": 144,
+                    "type": "multiple",
+                    "question": "Co musí provozovatel kritické informační infrastruktury (KII) dělat? (více správných)",
+                    "options": [
+                        "Hlásit kontaktní údaje",
+                        "Detekovat a hlásit incidenty",
+                        "Zavést bezpečnostní opatření podle vyhlášky č. 82/2018 Sb.",
+                        "Pouze provádět pravidelné audity",
+                        "Provádět ochranná a reaktivní opatření vydaná NÚKIB"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 145,
+                    "type": "single",
+                    "question": "Co je významný informační systém?",
+                    "options": [
+                        "Systém v soukromém sektoru s vysokou hodnotou",
+                        "Informační systém spravovaný orgánem veřejné moci, který není KII, ale jeho narušení může omezit výkon působnosti",
+                        "Každý systém s více než 1000 uživateli",
+                        "Systém certifikovaný podle ISO 27001"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 146,
+                    "type": "single",
+                    "question": "Co je stav kybernetického nebezpečí?",
+                    "options": [
+                        "Běžný bezpečnostní incident",
+                        "Stav, ve kterém je ve velkém rozsahu ohrožena bezpečnost informací a mohlo by dojít k ohrožení zájmů ČR - rozhoduje ředitel NÚKIB",
+                        "Varování před možnou hrozbou",
+                        "Každé narušení dostupnosti systému"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 147,
+                    "type": "single",
+                    "question": "Co je kybernetický bezpečnostní incident (KBI)?",
+                    "options": [
+                        "Pouze phishingové útoky",
+                        "Narušení bezpečnosti informací v IS, narušení bezpečnosti služeb nebo integrity komunikačních sítí",
+                        "Každé přihlášení do systému",
+                        "Pouze útoky z vnějšku organizace"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 148,
+                    "type": "single",
+                    "question": "Jaký je rozdíl mezi varováním a kybernetickým bezpečnostním incidentem?",
+                    "options": [
+                        "Varování je závažnější než incident",
+                        "Varování je upozornění na existenci hrozby bez požadavku na konkrétní akci, incident vyžaduje detekci a hlášení",
+                        "Žádný rozdíl",
+                        "Varování se týká pouze KII"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 149,
+                    "type": "multiple",
+                    "question": "Jaké jsou typy bezpečnostních opatření podle ZKB? (více správných)",
+                    "options": [
+                        "Organizační - řízení rizik, bezpečnostní politika",
+                        "Technická - fyzická bezpečnost, ověření identity",
+                        "Marketingová - propagace bezpečnosti",
+                        "Personální - školení zaměstnanců",
+                        "Právní - smlouvy s dodavateli"
+                    ],
+                    "correct": [0, 1]
+                },
+                {
+                    "id": 150,
+                    "type": "single",
+                    "question": "Co je Target of Evaluation (TOE) v Common Criteria?",
+                    "options": [
+                        "Certifikační autorita",
+                        "Produkt nebo systém, který je předmětem hodnocení",
+                        "Metodika hodnocení",
+                        "Bezpečnostní politika"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 151,
+                    "type": "single",
+                    "question": "Co je TSF v Common Criteria?",
+                    "options": [
+                        "Total Security Framework",
+                        "TOE Security Functions - HW, SW, FW využívaný hodnoceným systémem",
+                        "Technical Safety Features",
+                        "Target System Functionality"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 152,
+                    "type": "single",
+                    "question": "Jaký je hlavní rozdíl mezi EAL1 a EAL7?",
+                    "options": [
+                        "EAL1 je dražší",
+                        "EAL1 - funkcionalita otestována (nezávislé testování), EAL7 - formálně verifikovaný návrh a testování (white box, velmi vysoce rizikové situace)",
+                        "EAL7 je rychlejší na získání",
+                        "Žádný praktický rozdíl"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 153,
+                    "type": "single",
+                    "question": "Pro jakou úroveň zabezpečení je vhodný EAL3?",
+                    "options": [
+                        "Minimální zabezpečení",
+                        "Střední úroveň nezávisle zaručené bezpečnosti - metodicky testováno a kontrolováno",
+                        "Maximální zabezpečení",
+                        "Pouze pro vojenské systémy"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 154,
+                    "type": "single",
+                    "question": "Co charakterizuje EAL5?",
+                    "options": [
+                        "Pouze black box testování",
+                        "Semiformálně navrženo a testováno - obsahuje celou implementaci, formální model, testování proti středně silným útočníkům",
+                        "Žádné formální požadavky",
+                        "Pouze pro starší systémy"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 155,
+                    "type": "multiple",
+                    "question": "Co patří do organizace Protection Profile (PP)? (více správných)",
+                    "options": [
+                        "Popis TOE",
+                        "Bezpečné prostředí TOE",
+                        "Bezpečnostní cíle",
+                        "Marketingové materiály",
+                        "Bezpečnostní IT požadavky"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 156,
+                    "type": "single",
+                    "question": "Kdo je autorizovaný uživatel (S1) v profilech PP?",
+                    "options": [
+                        "Každý uživatel systému",
+                        "Uživatel, který má autentizační atribut potřebný k přístupu do chráněné části paměti TOE",
+                        "Administrátor systému",
+                        "Externí auditor"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 157,
+                    "type": "single",
+                    "question": "Co znamená záruka v kontextu CC hodnocení?",
+                    "options": [
+                        "Právní záruka výrobce",
+                        "Důvody pro důvěru, že objekt splňuje svoje bezpečnostní cíle",
+                        "Finanční garance",
+                        "Pojištění produktu"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 158,
+                    "type": "single",
+                    "question": "Jaký typ testování používá EAL1?",
+                    "options": [
+                        "White box testování",
+                        "Nezávislé testování - vhodné pro starší systémy, nepotřebujeme programátora",
+                        "Formální verifikace",
+                        "Penetrační testy"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 159,
+                    "type": "single",
+                    "question": "Co musí obsahovat EAL2 oproti EAL1?",
+                    "options": [
+                        "Formální model",
+                        "Otestován high-level design, black box testování programátorem",
+                        "White box testování",
+                        "Modulární design"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 160,
+                    "type": "single",
+                    "question": "Jaký typ testování se používá u EAL3?",
+                    "options": [
+                        "Black box testování",
+                        "Gray box testování - metodicky testováno a kontrolováno",
+                        "White box testování",
+                        "Žádné testování"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 161,
+                    "type": "multiple",
+                    "question": "Co charakterizuje EAL6? (více správných)",
+                    "options": [
+                        "Semiformálně verifikovaný návrh",
+                        "Modulární přístup k návrhu",
+                        "Testování zranitelností proti velmi silným útočníkům",
+                        "Pouze black box testy",
+                        "Vhodné pro vysoce rizikové situace"
+                    ],
+                    "correct": [0, 1, 2, 4]
+                },
+                {
+                    "id": 162,
+                    "type": "single",
+                    "question": "Co je hlavním přínosem certifikace podle CC?",
+                    "options": [
+                        "Snížení nákladů na vývoj",
+                        "Otevření cesty na nový trh, reklama",
+                        "Rychlejší vývoj produktu",
+                        "Nižší cena produktu"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 163,
+                    "type": "single",
+                    "question": "Jaký je problém s certifikací CC při aktualizaci produktu?",
+                    "options": [
+                        "Je příliš drahá",
+                        "Jakákoliv změna produktu (např. service pack) hodnocení anuluje",
+                        "Trvá příliš dlouho",
+                        "Není mezinárodně uznávaná"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 164,
+                    "type": "single",
+                    "question": "Pro jakou úroveň rizika je určen EAL7?",
+                    "options": [
+                        "Nízké riziko",
+                        "Střední riziko",
+                        "Vysoké riziko",
+                        "Velmi vysoce rizikové situace - formálně verifikovaný návrh"
+                    ],
+                    "correct": [3]
+                },
+                {
+                    "id": 165,
+                    "type": "multiple",
+                    "question": "Jaké důkazy jsou potřeba pro EAL7? (více správných)",
+                    "options": [
+                        "Formální model s formální prezentací funkčních požadavků",
+                        "White box testování",
+                        "Kompletní potvrzení výsledků testů od programátora",
+                        "Pouze black box testování",
+                        "Marketingové materiály"
+                    ],
+                    "correct": [0, 1, 2]
+                },
+                {
+                    "id": 166,
+                    "type": "single",
+                    "question": "Jaká je hlavní výhoda Common Criteria (CC) oproti starším standardům?",
+                    "options": [
+                        "Je levnější",
+                        "Je celosvětový standard (ISO/IEC 15408)",
+                        "Je jednodušší",
+                        "Nevyžaduje dokumentaci"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 167,
+                    "type": "single",
+                    "question": "Co znamená akreditace v kontextu hodnocení bezpečnosti?",
+                    "options": [
+                        "Vydání certifikátu",
+                        "Oficiální souhlas s prováděním určité činnosti",
+                        "Ověření shody vlastností",
+                        "Kontrola dokumentace"
+                    ],
+                    "correct": [1]
+                },
+                {
+                    "id": 168,
+                    "type": "single",
+                    "question": "Co je validace v kontextu CC?",
+                    "options": [
+                        "Vydání osvědčení",
+                        "Oficiální souhlas",
+                        "Ověření platnosti/souladu",
+                        "Testování funkčnosti"
+                    ],
+                    "correct": [2]
+                },
+
+                {
+                    id: 50,
+                    type: 'multiple',
+                    question: 'Které typy stupnic se používají pro metriky v ISMS? (více správných)',
+                    options: [
+                        'Nominální (pojmenovávací)',
+                        'Ordinální (pořadnicová)',
+                        'Intervalová',
+                        'Hexadecimální',
+                        'Racionální (poměrová)'
+                    ],
+                    correct: [0, 1, 2, 4]
+                }
+            ];
+            const selectRandomQuestions = (previouslyUsed = []) => {
+                const totalQuestions = allQuestions.length;
+                const questionsToSelect = 15;
+                
+                // Pokud jsme použili většinu otázek, resetuj seznam
+                const availableIds = previouslyUsed.length > totalQuestions * 0.7 
+                    ? [] 
+                    : previouslyUsed;
+
+                // Otázky, které jsme ještě nepoužili nebo už jsou k dispozici po resetu
+                const availableQuestions = allQuestions.filter(q => !availableIds.includes(q.id));
+                
+                // Pokud nemáme dost dostupných otázek, přidáme i některé použité
+                const questionsPool = availableQuestions.length >= questionsToSelect
+                    ? availableQuestions
+                    : allQuestions;
+
+                // Náhodně vybereme otázky
+                const shuffled = [...questionsPool].sort(() => Math.random() - 0.5);
+                const selected = shuffled.slice(0, questionsToSelect);
+                
+                // Zamíchej pořadí odpovědí u každé otázky
+                const selectedWithShuffledOptions = selected.map(question => {
+                    // Vytvoř pole indexů s mapováním na originální indexy
+                    const indexMapping = question.options.map((_, idx) => idx);
+                    const shuffledMapping = [...indexMapping].sort(() => Math.random() - 0.5);
+                    
+                    return {
+                        ...question,
+                        options: shuffledMapping.map(idx => question.options[idx]),
+                        correct: question.correct.map(correctIdx => shuffledMapping.indexOf(correctIdx)),
+                        originalMapping: shuffledMapping
+                    };
+                });
+                
+                // Aktualizuj seznam použitých otázek
+                const newUsedIds = [...availableIds, ...selected.map(q => q.id)];
+                setUsedQuestionIds(newUsedIds);
+                
+                return selectedWithShuffledOptions;
+            };            useEffect(() => {
+                setSelectedQuestions(selectRandomQuestions(usedQuestionIds));
+            }, []);
+
+            const handleAnswer = (questionId, optionIndex) => {
+                const newAnswers = { ...answers };
+                const question = selectedQuestions.find(q => q.id === questionId);
+                
+                if (question.type === 'single') {
+                    newAnswers[questionId] = [optionIndex];
+                } else {
+                    if (!newAnswers[questionId]) {
+                        newAnswers[questionId] = [];
+                    }
+                    const currentAnswers = [...newAnswers[questionId]];
+                    const index = currentAnswers.indexOf(optionIndex);
+                    
+                    if (index > -1) {
+                        currentAnswers.splice(index, 1);
+                    } else {
+                        currentAnswers.push(optionIndex);
+                    }
+                    newAnswers[questionId] = currentAnswers;
+                }
+                
+                setAnswers(newAnswers);
+            };
+
+            const handleSubmit = () => {
+                let correctAnswers = 0;
+                
+                selectedQuestions.forEach(question => {
+                    const userAnswer = answers[question.id] || [];
+                    const correctAnswer = question.correct;
+                    
+                    if (userAnswer.length === correctAnswer.length &&
+                        userAnswer.sort().every((val, idx) => val === correctAnswer.sort()[idx])) {
+                        correctAnswers++;
+                    }
+                });
+                
+                setScore(correctAnswers);
+                setTotalCorrect(totalCorrect + correctAnswers);
+                setTotalAttempted(totalAttempted + selectedQuestions.length);
+                setSubmitted(true);
+            };
+
+            const handleReset = () => {
+                setAnswers({});
+                setSubmitted(false);
+                setScore(0);
+            };
+
+            const handleNewQuestions = () => {
+                setAnswers({});
+                setSubmitted(false);
+                setScore(0);
+                setSelectedQuestions(selectRandomQuestions(usedQuestionIds));
+            };
+
+            const handleFullReset = () => {
+                setAnswers({});
+                setSubmitted(false);
+                setScore(0);
+                setTotalCorrect(0);
+                setTotalAttempted(0);
+                setUsedQuestionIds([]);
+                setSelectedQuestions(selectRandomQuestions([]));
+            };
+
+            const isAnswerCorrect = (questionId) => {
+                const question = selectedQuestions.find(q => q.id === questionId);
+                const userAnswer = answers[questionId] || [];
+                const correctAnswer = question.correct;
+                
+                return userAnswer.length === correctAnswer.length &&
+                    userAnswer.sort().every((val, idx) => val === correctAnswer.sort()[idx]);
+            };
+
+            const successRate = totalAttempted > 0 ? (totalCorrect / totalAttempted * 100).toFixed(1) : 0;
+
+            if (selectedQuestions.length === 0) {
+                return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                    <div className="text-xl">Načítání otázek...</div>
+                </div>;
+            }
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Celkové skóre */}
+                        {totalAttempted > 0 && (
+                            <div className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg shadow-xl p-6 mb-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Trophy size={32} />
+                                        <div>
+                                            <h2 className="text-2xl font-bold">Celkové skóre</h2>
+                                            <p className="text-purple-100">Tvůj průběžný výsledek</p>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="text-4xl font-bold">{successRate}%</div>
+                                        <div className="text-purple-100">{totalCorrect} / {totalAttempted} správně</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="bg-white rounded-lg shadow-xl p-8 mb-6">
+                            <h1 className="text-3xl font-bold text-gray-800 mb-2">PV017 Bezpečnost IT</h1>
+                            <p className="text-gray-600 mb-4">Testovací kvíz - 15 náhodných otázek</p>
+                            
+                            {submitted && (
+                                <div className={`p-4 rounded-lg mb-6 ${score >= 12 ? 'bg-green-100 border-green-500' : score >= 9 ? 'bg-yellow-100 border-yellow-500' : 'bg-red-100 border-red-500'} border-2`}>
+                                    <p className="text-xl font-bold">
+                                        Výsledek této sady: {score} / {selectedQuestions.length} ({Math.round(score / selectedQuestions.length * 100)}%)
+                                    </p>
+                                    <p className="text-sm mt-1">
+                                        {score >= 12 ? '🎉 Výborně!' : score >= 9 ? '👍 Dobře!' : '📚 Ještě se uč!'}
+                                    </p>
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 mb-4 flex-wrap">
+                                <button
+                                    onClick={handleNewQuestions}
+                                    className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
+                                >
+                                    <RefreshCw size={18} />
+                                    Nové otázky
+                                </button>
+                                <button
+                                    onClick={handleReset}
+                                    className="flex items-center gap-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition"
+                                >
+                                    <RotateCcw size={18} />
+                                    Reset odpovědí
+                                </button>
+                                {totalAttempted > 0 && (
+                                    <button
+                                        onClick={handleFullReset}
+                                        className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition"
+                                    >
+                                        <RotateCcw size={18} />
+                                        Resetovat vše
+                                    </button>
+                                )}
+                            </div>
+                            
+                            {usedQuestionIds.length > 0 && (
+                                <p className="text-sm text-gray-500">
+                                    Procvičeno otázek: {usedQuestionIds.length} / {allQuestions.length}
+                                </p>
+                            )}
+                        </div>
+
+                        {selectedQuestions.map((question, index) => (
+                            <div key={question.id} className="bg-white rounded-lg shadow-lg p-6 mb-4">
+                                <div className="flex items-start gap-3 mb-4">
+                                    <span className="flex-shrink-0 w-8 h-8 bg-indigo-500 text-white rounded-full flex items-center justify-center font-bold">
+                                        {index + 1}
+                                    </span>
+                                    <div className="flex-1">
+                                        <p className="text-lg font-semibold text-gray-800">{question.question}</p>
+                                        {question.type === 'multiple' && (
+                                            <p className="text-sm text-indigo-600 mt-1">Více správných odpovědí</p>
+                                        )}
+                                    </div>
+                                    {submitted && (
+                                        <div>
+                                            {isAnswerCorrect(question.id) ? (
+                                                <CheckCircle className="text-green-500" size={24} />
+                                            ) : (
+                                                <XCircle className="text-red-500" size={24} />
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2 ml-11">
+                                    {question.options.map((option, optionIndex) => {
+                                        const isSelected = answers[question.id]?.includes(optionIndex);
+                                        const isCorrect = question.correct.includes(optionIndex);
+                                        const showCorrect = submitted && isCorrect;
+                                        const showWrong = submitted && isSelected && !isCorrect;
+
+                                        return (
+                                            <label
+                                                key={optionIndex}
+                                                className={`flex items-center p-3 rounded-lg cursor-pointer transition ${
+                                                    submitted
+                                                        ? showCorrect
+                                                            ? 'bg-green-100 border-2 border-green-500'
+                                                            : showWrong
+                                                            ? 'bg-red-100 border-2 border-red-500'
+                                                            : 'bg-gray-50'
+                                                        : isSelected
+                                                        ? 'bg-indigo-100 border-2 border-indigo-500'
+                                                        : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                                                }`}
+                                            >
+                                                <input
+                                                    type={question.type === 'single' ? 'radio' : 'checkbox'}
+                                                    name={`question-${question.id}`}
+                                                    checked={isSelected || false}
+                                                    onChange={() => !submitted && handleAnswer(question.id, optionIndex)}
+                                                    disabled={submitted}
+                                                    className="mr-3"
+                                                />
+                                                <span className="text-gray-700">{option}</span>
+                                            </label>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+
+                        {!submitted && (
+                            <div className="bg-white rounded-lg shadow-lg p-6 sticky bottom-4">
+                                <button
+                                    onClick={handleSubmit}
+                                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg transition"
+                                >
+                                    Odeslat test
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<SecurityTest />, document.getElementById('root'));
+    </script>
+</body>
+</html>
